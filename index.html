@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clasificador de residuos por foto – Práctica 3.3</title>
+<style>
+:root{--bg:#f6f8f7;--card:#ffffff;--text:#1d2a24;--muted:#52615a;--accent:#1f6f50;--border:#d5e0da;--ok:#d6efe2;--okt:#14532d;--mid:#fdf0c8;--midt:#7a5a00;--bad:#f9d9d9;--badt:#8a1c1c}
+@media (prefers-color-scheme:dark){:root{--bg:#121a16;--card:#1a2420;--text:#e6efe9;--muted:#9fb1a8;--accent:#5fc29a;--border:#2c3a34;--ok:#1d4331;--okt:#a7e8c6;--mid:#4a3d12;--midt:#f2d57a;--bad:#4d2222;--badt:#f4b4b4}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6}
+header,main,footer{max-width:960px;margin:0 auto;padding:1.5rem 1.25rem}
+h1{color:var(--accent);margin:.2rem 0 .4rem;font-size:1.9rem}
+h2{color:var(--accent);margin-top:0}
+.sub{color:var(--muted);margin:0}
+nav{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+nav a{text-decoration:none;border:1px solid var(--border);background:var(--card);padding:.25rem .7rem;border-radius:999px;font-size:.9rem}
+section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--border)}
+.video{position:relative;padding-top:56.25%;border-radius:8px;overflow:hidden}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+a{color:var(--accent)}
+code{background:var(--bg);border:1px solid var(--border);padding:.1rem .35rem;border-radius:4px;font-size:.9em}
+.flow{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.5rem 0 1rem}
+.flow span{background:var(--bg);border:1px solid var(--border);padding:.3rem .7rem;border-radius:8px;font-size:.9rem}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:480px}
+th,td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-weight:600;font-size:.9rem}
+.tag{padding:.1rem .6rem;border-radius:999px;font-size:.85rem;font-weight:600}
+.tag.ok{background:var(--ok);color:var(--okt)}.tag.mid{background:var(--mid);color:var(--midt)}.tag.bad{background:var(--bad);color:var(--badt)}
+.stats{display:flex;flex-wrap:wrap;gap:1rem;margin:1rem 0 0}
+.stat{flex:1 1 180px;border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;background:var(--bg)}
+.stat b{display:block;font-size:1.6rem;color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem}
+figure{margin:0}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:.3rem}
+footer{color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<header>
+  <h1>Clasificador de residuos por foto</h1>
+  <p class="sub">Práctica 3.3 · Desarrollo Sustentable (ACD-0908) · Ingeniería en Sistemas Computacionales<br>Tema 3.3: Impacto de actividades humanas sobre la naturaleza · Autor: Sanchez Gamboa Jesus</p>
+  <nav>
+    <a href="#resumen">Resumen</a><a href="#escenario">Escenario</a><a href="#video">Video</a><a href="#resultados">Resultados</a><a href="#pruebas">Pruebas</a><a href="#archivos">Archivos</a>
+  </nav>
+</header>
+<main>
+  <section id="resumen">
+    <h2>Resumen</h2>
+    <p>Bot de Telegram que recibe la <strong>foto de un residuo</strong> y responde con inteligencia artificial qué es, de qué material está hecho, cómo se clasifica, si se recicla, a dónde va y cuánto tarda en degradarse. Se armó sin programar, con <strong>Telegram (BotFather)</strong> y <strong>Make (Make AI Agent con visión)</strong>.</p>
+  </section>
+
+  <section id="escenario">
+    <h2>Escenario en Make</h2>
+    <div class="flow"><span>Telegram: Watch Updates</span>→<span>Telegram: Download a File</span>→<span>Make AI Agent</span>→<span>Telegram: respuesta</span></div>
+    <img src="imagenes/make/01_escenario_completo.png" alt="Escenario completo en Make">
+    <p>Un filtro deja pasar solo los mensajes que traen foto, y <code>last()</code> toma la foto de mayor calidad que manda Telegram. La configuración de cada módulo está en <a href="codigo/configuracion_make.md">codigo/configuracion_make.md</a> y las instrucciones del agente en <a href="codigo/instrucciones_ai_agent.txt">codigo/instrucciones_ai_agent.txt</a>.</p>
+    <div class="grid">
+      <figure><a href="imagenes/make/02_modulo_download_a_file.png"><img loading="lazy" src="imagenes/make/02_modulo_download_a_file.png" alt="Módulo Download a File"></a><figcaption>Módulo Download a File</figcaption></figure>
+      <figure><a href="imagenes/make/03_modulo_make_ai_agent.png"><img loading="lazy" src="imagenes/make/03_modulo_make_ai_agent.png" alt="Módulo Make AI Agent"></a><figcaption>Módulo Make AI Agent</figcaption></figure>
+      <figure><a href="imagenes/make/04_modulo_respuesta_telegram.png"><img loading="lazy" src="imagenes/make/04_modulo_respuesta_telegram.png" alt="Módulo de respuesta en Telegram"></a><figcaption>Módulo de respuesta en Telegram</figcaption></figure>
+      <figure><a href="imagenes/make/05_historial_creditos.png"><img loading="lazy" src="imagenes/make/05_historial_creditos.png" alt="Historial de créditos en Make"></a><figcaption>Historial de créditos</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="video">
+    <h2>Video</h2>
+    <div class="video">
+      <iframe src="https://www.youtube.com/embed/gZRNZdN_M0M" title="Video de demostración del clasificador de residuos" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <p><a href="https://youtu.be/gZRNZdN_M0M">Abrir el video en YouTube</a> (no listado: solo se ve con este enlace)</p>
+  </section>
+
+  <section id="resultados">
+    <h2>Resultados</h2>
+    <p>Se probaron 10 residuos reales y se verificó cada respuesta contra fuentes confiables.</p>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Residuo</th><th>Clasificación de la IA</th><th>¿Correcta?</th></tr></thead>
+      <tbody>
+<tr><td>1</td><td>Trapo de tela verde</td><td>Inorgánico reciclable</td><td><span class="tag mid">Parcial</span></td></tr>
+<tr><td>2</td><td>Botella PET</td><td>Inorgánico reciclable</td><td><span class="tag ok">Sí</span></td></tr>
+<tr><td>3</td><td>Zapato deportivo</td><td>Inorgánico no reciclable</td><td><span class="tag ok">Sí</span></td></tr>
+<tr><td>4</td><td>Cable eléctrico con enchufe</td><td>Manejo especial o peligroso</td><td><span class="tag ok">Sí</span></td></tr>
+<tr><td>5</td><td>Peluche</td><td>Inorgánico no reciclable</td><td><span class="tag ok">Sí</span></td></tr>
+<tr><td>6</td><td>Desodorante en barra (envase)</td><td>Inorgánico reciclable</td><td><span class="tag ok">Sí</span></td></tr>
+<tr><td>7</td><td>Lata de aluminio</td><td>Inorgánico reciclable</td><td><span class="tag ok">Sí</span></td></tr>
+<tr><td>8</td><td>Folleto de papel</td><td>Orgánico</td><td><span class="tag bad">No</span></td></tr>
+<tr><td>9</td><td>Bolsa de plástico</td><td>Inorgánico reciclable</td><td><span class="tag ok">Sí</span></td></tr>
+<tr><td>10</td><td>Control remoto</td><td>Manejo especial o peligroso</td><td><span class="tag ok">Sí</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>80%</b>de aciertos en la clasificación (8 de 10)</div>
+      <div class="stat"><b>4.2 a 4.3</b>créditos de Make por foto</div>
+    </div>
+    <p>La tabla completa con tiempos de degradación y fuentes, la investigación y las preguntas de reflexión están en el reporte: <a href="resultado/Practica_3_3_Clasificador_de_residuos.pdf">PDF</a> · <a href="resultado/Practica_3_3_Clasificador_de_residuos.docx">Word</a>.</p>
+  </section>
+
+  <section id="pruebas">
+    <h2>Pruebas con el bot</h2>
+    <div class="grid">
+<figure><a href="imagenes/pruebas_bot/01_trapo_de_tela.png"><img loading="lazy" src="imagenes/pruebas_bot/01_trapo_de_tela.png" alt="Prueba 1: Trapo de tela verde"></a><figcaption>1. Trapo de tela verde</figcaption></figure>
+<figure><a href="imagenes/pruebas_bot/02_botella_pet.png"><img loading="lazy" src="imagenes/pruebas_bot/02_botella_pet.png" alt="Prueba 2: Botella PET"></a><figcaption>2. Botella PET</figcaption></figure>
+<figure><a href="imagenes/pruebas_bot/03_zapato_deportivo.png"><img loading="lazy" src="imagenes/pruebas_bot/03_zapato_deportivo.png" alt="Prueba 3: Zapato deportivo"></a><figcaption>3. Zapato deportivo</figcaption></figure>
+<figure><a href="imagenes/pruebas_bot/04_cable_electrico.png"><img loading="lazy" src="imagenes/pruebas_bot/04_cable_electrico.png" alt="Prueba 4: Cable eléctrico con enchufe"></a><figcaption>4. Cable eléctrico con enchufe</figcaption></figure>
+<figure><a href="imagenes/pruebas_bot/05_peluche.png"><img loading="lazy" src="imagenes/pruebas_bot/05_peluche.png" alt="Prueba 5: Peluche"></a><figcaption>5. Peluche</figcaption></figure>
+<figure><a href="imagenes/pruebas_bot/06_desodorante_en_barra.png"><img loading="lazy" src="imagenes/pruebas_bot/06_desodorante_en_barra.png" alt="Prueba 6: Desodorante en barra (envase)"></a><figcaption>6. Desodorante en barra (envase)</figcaption></figure>
+<figure><a href="imagenes/pruebas_bot/07_lata_de_aluminio.png"><img loading="lazy" src="imagenes/pruebas_bot/07_lata_de_aluminio.png" alt="Prueba 7: Lata de aluminio"></a><figcaption>7. Lata de aluminio</figcaption></figure>
+<figure><a href="imagenes/pruebas_bot/08_folleto_de_papel.png"><img loading="lazy" src="imagenes/pruebas_bot/08_folleto_de_papel.png" alt="Prueba 8: Folleto de papel"></a><figcaption>8. Folleto de papel</figcaption></figure>
+<figure><a href="imagenes/pruebas_bot/09_bolsa_de_plastico.png"><img loading="lazy" src="imagenes/pruebas_bot/09_bolsa_de_plastico.png" alt="Prueba 9: Bolsa de plástico"></a><figcaption>9. Bolsa de plástico</figcaption></figure>
+<figure><a href="imagenes/pruebas_bot/10_control_remoto.png"><img loading="lazy" src="imagenes/pruebas_bot/10_control_remoto.png" alt="Prueba 10: Control remoto"></a><figcaption>10. Control remoto</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="archivos">
+    <h2>Archivos del proyecto</h2>
+    <ul>
+      <li><a href="README.md">README del repositorio</a></li>
+      <li><a href="codigo/configuracion_make.md">Configuración del escenario en Make</a></li>
+      <li><a href="codigo/instrucciones_ai_agent.txt">Instrucciones del agente de IA</a></li>
+      <li><a href="resultado/Practica_3_3_Clasificador_de_residuos.pdf">Reporte de la práctica (PDF)</a></li>
+      <li><a href="video/enlace_video.md">Enlace al video</a></li>
+    </ul>
+  </section>
+</main>
+<footer>El token del bot no está incluido en este repositorio. Si quieres reproducir el proyecto, crea tu propio bot con @BotFather y usa tu token en la conexión de Make.</footer>
+</body>
+</html>
